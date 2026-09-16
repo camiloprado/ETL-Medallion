@@ -13,15 +13,6 @@ This is a real package with a CLI, Docker Compose, SQL-modeled gold tables, and 
 
 Both endpoints are free, documented, and need **no API key**. CEP was skipped because it is a point lookup, not a catalog you can land as a daily batch without inventing a zip list.
 
-## What a recruiter should look at in 5 minutes
-
-1. This README — medallion story, honest stack, how to run.
-2. `src/pipeline/schema.py` — column contracts and why each source was chosen.
-3. `src/pipeline/silver.py` and `src/pipeline/gold.py` — typing, dedupe, upserts.
-4. `sql/init/001_gold_schema.sql` — gold grain and keys.
-5. Run it: `docker compose up --build --abort-on-container-exit`, then the sample query below.
-6. Run it a second time (`docker compose run --rm pipeline`) and confirm `gold.fact_rate_snapshot` still has **one row per rate per day**.
-
 ## Architecture
 
 ```mermaid
