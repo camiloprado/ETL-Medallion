@@ -1,0 +1,81 @@
+{
+  "banks": [
+    {
+      "ispb": "00000000",
+      "name": "BCO DO BRASIL S.A.",
+      "code": 1,
+      "fullName": "Banco do Brasil S.A.",
+      "cnpj": null,
+      "headquarters_address": {
+        "street": "SAUN QUADRA 5",
+        "number": null,
+        "complement": "EDIFICIO BANCO DO BRASIL",
+        "district": "ASA NORTE",
+        "city": "BRASÍLIA",
+        "state": "df",
+        "zipCode": "70040-912"
+      },
+      "address_source": "bcb_sedes_exact_match",
+      "address_confidence": "high"
+    },
+    {
+      "ispb": "60701190",
+      "name": "ITAÚ UNIBANCO S.A.",
+      "code": 341,
+      "fullName": "ITAU UNIBANCO S.A.",
+      "cnpj": null,
+      "headquarters_address": {
+        "street": "PC ALFREDO EGYDIO DE SOUZA ARANHA",
+        "number": "100",
+        "complement": null,
+        "district": "PARQUE JABAQUARA",
+        "city": "SAO PAULO",
+        "state": "SP",
+        "zipCode": "04344-902"
+      },
+      "address_source": "bcb_sedes_exact_match",
+      "address_confidence": "high"
+    },
+    {
+      "ispb": "00038121",
+      "name": "Selic",
+      "code": null,
+      "fullName": "Banco Central do Brasil - Selic",
+      "cnpj": null,
+      "headquarters_address": null,
+      "address_source": null,
+      "address_confidence": "none"
+    },
+    {
+      "ispb": "00000000",
+      "name": "BCO DO BRASIL S.A. DUPLICATE",
+      "code": 1,
+      "fullName": "Banco do Brasil S.A.",
+      "cnpj": null,
+      "headquarters_address": {
+        "street": "SAUN QUADRA 5",
+        "number": null,
+        "complement": null,
+        "district": "ASA NORTE",
+        "city": "BRASÍLIA",
+        "state": "DF",
+        "zipCode": "70040-912"
+      },
+      "address_source": "bcb_sedes_exact_match",
+      "address_confidence": "high"
+    },
+    {
+      "ispb": null,
+      "name": "MISSING ISPB SHOULD DROP",
+      "code": 999,
+      "fullName": "Ghost Bank",
+      "cnpj": null,
+      "headquarters_address": null
+    }
+  ],
+  "taxas": [
+    { "nome": "Selic", "valor": 14.0 },
+    { "nome": "CDI", "valor": 13.9 },
+    { "nome": "IPCA", "valor": 4.22 }
+  ]
+}

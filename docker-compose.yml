@@ -1,0 +1,46 @@
+# One-command reviewer path:
+#   docker compose up --build --abort-on-container-exit
+# Re-run without rebuilding Postgres:
+#   docker compose run --rm pipeline
+
+name: br-open-data
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: br_open_data
+      POSTGRES_USER: pipeline
+      POSTGRES_PASSWORD: pipeline
+    ports:
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pipeline -d br_open_data"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  pipeline:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      BRASILAPI_BASE_URL: https://brasilapi.com.br
+      DATA_DIR: /app/data
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: br_open_data
+      POSTGRES_USER: pipeline
+      POSTGRES_PASSWORD: pipeline
+      POSTGRES_SSLMODE: disable
+    volumes:
+      - ./data:/app/data
+    command: ["python", "-m", "pipeline", "run"]
+
+volumes:
+  pgdata:
