@@ -91,7 +91,16 @@ docker compose up --build --abort-on-container-exit
 
 This starts Postgres, applies `sql/init/001_gold_schema.sql`, extracts BrasilAPI, writes `data/bronze` and `data/silver`, and loads `gold.*`.
 
-Postgres is published on **localhost:55432** (not 5432) so it is less likely to collide with a local database.
+Postgres is published on **localhost:55432** (not 5432) so it is less likely to collide with a local database. The pipeline container uses **host networking** so HTTPS to BrasilAPI works on Docker bridges that have no IPv6 route (Cloudflare AAAA + `Errno 101`). Extract also prefers IPv4 DNS for the same reason.
+
+On Docker Desktop (Mac/Windows), if host networking misbehaves, run Postgres from Compose and the job on the host:
+
+```bash
+docker compose up -d postgres
+cp .env.example .env   # set POSTGRES_PORT=55432
+pip install -e .
+python -m pipeline run
+```
 
 ### Prove idempotency
 

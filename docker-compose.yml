@@ -26,14 +26,18 @@ services:
 
   pipeline:
     build: .
+    # Host network: BrasilAPI is on Cloudflare IPv6. Many Docker bridges
+    # have no IPv6 route (or broken NAT) and extract then fails. The job
+    # still talks to Postgres on the published host port below.
+    network_mode: host
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       BRASILAPI_BASE_URL: https://brasilapi.com.br
       DATA_DIR: /app/data
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 55432
       POSTGRES_DB: br_open_data
       POSTGRES_USER: pipeline
       POSTGRES_PASSWORD: pipeline

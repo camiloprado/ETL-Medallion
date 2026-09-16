@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import socket
 import time
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -25,8 +26,31 @@ class ExtractError(RuntimeError):
     pass
 
 
+def _prefer_ipv4() -> None:
+    """Prefer A records. Docker bridge IPv6 is often unroutable (Errno 101)."""
+    original = socket.getaddrinfo
+
+    def ipv4_first(
+        host: str | bytes | None,
+        port: str | int | None,
+        family: int = 0,
+        type: int = 0,
+        proto: int = 0,
+        flags: int = 0,
+    ) -> list:
+        if family == 0:
+            try:
+                return original(host, port, socket.AF_INET, type, proto, flags)
+            except OSError:
+                return original(host, port, family, type, proto, flags)
+        return original(host, port, family, type, proto, flags)
+
+    socket.getaddrinfo = ipv4_first  # type: ignore[assignment]
+
+
 def extract_all(settings: Settings, ingest_date: date) -> dict[str, int]:
     """Fetch every configured source. Overwrites the same ingest_date partition."""
+    _prefer_ipv4()
     counts: dict[str, int] = {}
     with httpx.Client(
         base_url=settings.brasilapi_base_url.rstrip("/"),

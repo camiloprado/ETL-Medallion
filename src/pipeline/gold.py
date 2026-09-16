@@ -16,6 +16,11 @@ from pipeline.schema import RATE_METADATA
 logger = logging.getLogger(__name__)
 
 
+def _executemany(conn: psycopg.Connection, query: str, rows: list) -> None:
+    with conn.cursor() as cur:
+        cur.executemany(query, rows)
+
+
 def load_gold(settings: Settings, ingest_date: date) -> dict[str, int]:
     banks = pd.read_parquet(silver_parquet_path(settings.data_dir, "banks", ingest_date))
     taxas = pd.read_parquet(silver_parquet_path(settings.data_dir, "taxas", ingest_date))
@@ -146,7 +151,7 @@ def _upsert_dim_bank(conn: psycopg.Connection, banks: pd.DataFrame, ingest_date:
                 ingest_date,
             )
         )
-    conn.executemany(
+    _executemany(conn,
         """
         INSERT INTO gold.dim_bank (
             ispb, compe_code, short_name, full_name, cnpj,
@@ -189,7 +194,7 @@ def _upsert_dim_rate(conn: psycopg.Connection, taxas: pd.DataFrame) -> int:
                 rec["unit"],
             )
         )
-    conn.executemany(
+    _executemany(conn,
         """
         INSERT INTO gold.dim_rate (rate_code, rate_name, description, unit)
         VALUES (%s, %s, %s, %s)
@@ -222,7 +227,7 @@ def _upsert_fact_rate_snapshot(
                 ingest_date,
             )
         )
-    conn.executemany(
+    _executemany(conn,
         """
         INSERT INTO gold.fact_rate_snapshot (
             snapshot_date, rate_code, rate_value, source_extracted_at, ingest_date, loaded_at
@@ -264,7 +269,7 @@ def _replace_bank_coverage(conn: psycopg.Connection, banks: pd.DataFrame, ingest
         )
         for rec in grouped.to_dict(orient="records")
     ]
-    conn.executemany(
+    _executemany(conn,
         """
         INSERT INTO gold.agg_bank_coverage_by_state (
             as_of_date, state, bank_count, banks_with_compe, banks_with_headquarters
